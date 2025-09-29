@@ -61,9 +61,10 @@ public static class DependencyInjection
 - FluentValidation for business rules
 - Comprehensive error handling
 
-## Authentication
-This API uses JWT Bearer tokens for authentication. Include the token in the Authorization header:
-`Authorization: Bearer <your-token>`",
+## API Features
+- RESTful endpoints for all operations
+- Comprehensive data validation
+- Structured error responses",
                 Contact = new OpenApiContact
                 {
                     Name = "Student Management System",
@@ -86,34 +87,6 @@ This API uses JWT Bearer tokens for authentication. Include the token in the Aut
 
             // Add response examples
             options.EnableAnnotations();
-
-            // Add JWT Bearer authentication to Swagger
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        },
-                        Scheme = "oauth2",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header
-                    },
-                    new List<string>()
-                }
-            });
         });
 
         // CORS (if needed for frontend integration)

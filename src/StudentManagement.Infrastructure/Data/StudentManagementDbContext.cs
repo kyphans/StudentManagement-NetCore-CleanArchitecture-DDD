@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StudentManagement.Domain.Entities;
 using StudentManagement.Domain.ValueObjects;
@@ -6,7 +5,7 @@ using StudentManagement.Infrastructure.Data.Configurations;
 
 namespace StudentManagement.Infrastructure.Data;
 
-public class StudentManagementDbContext : IdentityDbContext
+public class StudentManagementDbContext : DbContext
 {
     public StudentManagementDbContext(DbContextOptions<StudentManagementDbContext> options) : base(options)
     {
@@ -19,8 +18,6 @@ public class StudentManagementDbContext : IdentityDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
         // Apply configurations
         modelBuilder.ApplyConfiguration(new StudentConfiguration());
         modelBuilder.ApplyConfiguration(new CourseConfiguration());

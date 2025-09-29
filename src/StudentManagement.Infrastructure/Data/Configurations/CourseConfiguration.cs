@@ -64,6 +64,10 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(Guid.Parse)
                     .ToList())
-            .HasColumnName("Prerequisites");
+            .HasColumnName("Prerequisites")
+            .Metadata.SetValueComparer(new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<Guid>>(
+                (c1, c2) => c1!.SequenceEqual(c2!),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToList()));
     }
 }
