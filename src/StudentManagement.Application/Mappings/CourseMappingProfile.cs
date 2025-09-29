@@ -11,7 +11,7 @@ public class CourseMappingProfile : Profile
         CreateMap<Course, CourseDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code.Value))
-            .ForMember(dest => dest.Prerequisites, opt => opt.MapFrom(src => src.Prerequisites));
+            .ForMember(dest => dest.Prerequisites, opt => opt.MapFrom(src => src.Prerequisites.ToList()));
 
         CreateMap<Course, CourseSummaryDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

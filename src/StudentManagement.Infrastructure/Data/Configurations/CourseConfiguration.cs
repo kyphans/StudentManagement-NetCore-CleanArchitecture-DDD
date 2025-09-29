@@ -57,13 +57,13 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
             .OnDelete(DeleteBehavior.Cascade);
 
         // Configure prerequisites as a simple collection
-        builder.Property(c => c.Prerequisites)
+        // Map to the private backing field instead of the public property
+        builder.Property<List<Guid>>("_prerequisites")
             .HasConversion(
                 v => string.Join(',', v.Select(id => id.ToString())),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                      .Select(Guid.Parse)
-                      .ToList()
-                      .AsReadOnly())
+                    .Select(Guid.Parse)
+                    .ToList())
             .HasColumnName("Prerequisites");
     }
 }

@@ -268,7 +268,7 @@ namespace StudentManagement.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("StudentManagement.Domain.Entities.Enrollment", b =>
@@ -320,7 +320,7 @@ namespace StudentManagement.Infrastructure.Migrations
                     b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollments", (string)null);
                 });
 
             modelBuilder.Entity("StudentManagement.Domain.Entities.Grade", b =>
@@ -366,7 +366,7 @@ namespace StudentManagement.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Grades");
+                    b.ToTable("Grades", (string)null);
                 });
 
             modelBuilder.Entity("StudentManagement.Domain.Entities.Student", b =>
@@ -417,7 +417,7 @@ namespace StudentManagement.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

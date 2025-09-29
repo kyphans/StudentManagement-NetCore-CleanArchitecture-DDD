@@ -6,12 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **Student Management System** built using **Clean Architecture** with **Domain-Driven Design (DDD)** principles in .NET 8.0.
 
-**Architecture**: 4-layer Clean Architecture (Domain → Application → Infrastructure → WebApi)  
-**Database**: SQLite with Entity Framework Core  
-**Authentication**: JWT Bearer tokens with ASP.NET Core Identity  
+**Architecture**: 4-layer Clean Architecture (Domain → Application → Infrastructure → WebApi)
+**Database**: SQLite with Entity Framework Core
+**Authentication**: JWT Bearer tokens with ASP.NET Core Identity
 **Patterns**: CQRS via MediatR, Repository Pattern, Domain Events
-
-> **📋 Detailed Information**: See memory bank files for comprehensive architecture rules, tech stack details, and implementation guidance.
 
 ## Essential Commands
 
@@ -66,7 +64,7 @@ dotnet ef database update -p src/StudentManagement.Infrastructure -s src/Student
 
 ## Implementation Status
 
-**Current Phase**: Phase 1 (Foundation) ✅ COMPLETE  
-**Next Phase**: Phase 2 (Domain Entities) - Ready to implement
+**Current Phase**: Phase 2 (Domain Layer) ✅ COMPLETE
+**Next Phase**: Phase 3 (Application CQRS) - Ready to implement
 
 > **📋 Detailed Status**: See `implementation-status-comprehensive` memory file for complete phase planning and current limitations.

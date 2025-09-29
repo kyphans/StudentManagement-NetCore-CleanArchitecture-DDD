@@ -1,6 +1,7 @@
 using StudentManagement.Application;
 using StudentManagement.Infrastructure;
 using StudentManagement.WebApi;
+using StudentManagement.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -26,8 +27,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Response compression
+app.UseResponseCompression();
+
+// Global exception handling middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 // Enable CORS (if configured)
 app.UseCors("AllowAll");
+
+// Health checks
+app.MapHealthChecks("/health");
 
 // Map controllers
 app.MapControllers();
