@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Repositories;
@@ -7,10 +8,12 @@ namespace StudentManagement.Application.Queries.Students;
 public class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, ApiResponseDto<PagedResultDto<StudentSummaryDto>>>
 {
     private readonly IStudentRepository _studentRepository;
+    private readonly IMapper _mapper;
 
-    public GetStudentsQueryHandler(IStudentRepository studentRepository)
+    public GetStudentsQueryHandler(IStudentRepository studentRepository, IMapper mapper)
     {
         _studentRepository = studentRepository;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<PagedResultDto<StudentSummaryDto>>> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
@@ -62,15 +65,7 @@ public class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, ApiResp
                 .Take(request.PageSize)
                 .ToList();
 
-            var studentDtos = students.Select(student => new StudentSummaryDto
-            {
-                Id = student.Id.Value,
-                FullName = $"{student.FirstName} {student.LastName}",
-                Email = student.Email.Value,
-                IsActive = student.IsActive,
-                GPA = student.CalculateGPA().Value,
-                TotalEnrollments = student.Enrollments.Count
-            }).ToList();
+            var studentDtos = _mapper.Map<List<StudentSummaryDto>>(students);
 
             var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 

@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Repositories;
@@ -8,10 +9,12 @@ namespace StudentManagement.Application.Queries.Courses;
 public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, ApiResponseDto<CourseDto>>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IMapper _mapper;
 
-    public GetCourseByIdQueryHandler(ICourseRepository courseRepository)
+    public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IMapper mapper)
     {
         _courseRepository = courseRepository;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<CourseDto>> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
@@ -26,21 +29,7 @@ public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, Api
                 return ApiResponseDto<CourseDto>.ErrorResult("Course not found");
             }
 
-            var courseDto = new CourseDto
-            {
-                Id = course.Id,
-                Code = course.Code.Value,
-                Name = course.Name,
-                Description = course.Description,
-                CreditHours = course.CreditHours,
-                Department = course.Department,
-                IsActive = course.IsActive,
-                MaxEnrollment = course.MaxEnrollment,
-                CurrentEnrollmentCount = course.CurrentEnrollmentCount,
-                Prerequisites = course.Prerequisites.ToList(),
-                CreatedAt = course.CreatedAt,
-                UpdatedAt = course.UpdatedAt
-            };
+            var courseDto = _mapper.Map<CourseDto>(course);
 
             return ApiResponseDto<CourseDto>.SuccessResult(courseDto);
         }

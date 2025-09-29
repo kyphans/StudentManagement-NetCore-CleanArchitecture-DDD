@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Repositories;
@@ -10,15 +11,18 @@ public class GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmentByIdQu
     private readonly IEnrollmentRepository _enrollmentRepository;
     private readonly IStudentRepository _studentRepository;
     private readonly ICourseRepository _courseRepository;
+    private readonly IMapper _mapper;
 
     public GetEnrollmentByIdQueryHandler(
         IEnrollmentRepository enrollmentRepository,
         IStudentRepository studentRepository,
-        ICourseRepository courseRepository)
+        ICourseRepository courseRepository,
+        IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;
         _studentRepository = studentRepository;
         _courseRepository = courseRepository;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<EnrollmentWithDetailsDto>> Handle(GetEnrollmentByIdQuery request, CancellationToken cancellationToken)
@@ -41,52 +45,10 @@ public class GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmentByIdQu
                 return ApiResponseDto<EnrollmentWithDetailsDto>.ErrorResult("Student or Course not found");
             }
 
-            var enrollmentDto = new EnrollmentWithDetailsDto
+            var enrollmentDto = _mapper.Map<EnrollmentWithDetailsDto>(enrollment) with
             {
-                Id = enrollment.Id,
-                StudentId = enrollment.StudentId.Value,
-                CourseId = enrollment.CourseId,
-                EnrollmentDate = enrollment.EnrollmentDate,
-                CompletionDate = enrollment.CompletionDate,
-                Status = enrollment.Status.ToString(),
-                CreditHours = enrollment.CreditHours,
-                Grade = enrollment.Grade != null ? new GradeDto
-                {
-                    Id = enrollment.Grade.Id,
-                    LetterGrade = enrollment.Grade.LetterGrade,
-                    GradePoints = enrollment.Grade.GradePoints,
-                    NumericScore = enrollment.Grade.NumericScore,
-                    Comments = enrollment.Grade.Comments,
-                    GradedDate = enrollment.Grade.GradedDate,
-                    GradedBy = enrollment.Grade.GradedBy,
-                    IsPassing = enrollment.Grade.IsPassing,
-                    IsHonorGrade = enrollment.Grade.IsHonorGrade,
-                    CreatedAt = enrollment.Grade.CreatedAt,
-                    UpdatedAt = enrollment.Grade.UpdatedAt
-                } : null,
-                CreatedAt = enrollment.CreatedAt,
-                UpdatedAt = enrollment.UpdatedAt,
-                Student = new StudentSummaryDto
-                {
-                    Id = student.Id.Value,
-                    FullName = $"{student.FirstName} {student.LastName}",
-                    Email = student.Email.Value,
-                    IsActive = student.IsActive,
-                    GPA = student.CalculateGPA().Value,
-                    TotalEnrollments = student.Enrollments.Count
-                },
-                Course = new CourseSummaryDto
-                {
-                    Id = course.Id,
-                    Code = course.Code.Value,
-                    Name = course.Name,
-                    CreditHours = course.CreditHours,
-                    Department = course.Department,
-                    IsActive = course.IsActive,
-                    CurrentEnrollmentCount = course.CurrentEnrollmentCount,
-                    MaxEnrollment = course.MaxEnrollment,
-                    CanEnroll = course.CurrentEnrollmentCount < course.MaxEnrollment && course.IsActive
-                }
+                Student = _mapper.Map<StudentSummaryDto>(student),
+                Course = _mapper.Map<CourseSummaryDto>(course)
             };
 
             return ApiResponseDto<EnrollmentWithDetailsDto>.SuccessResult(enrollmentDto);

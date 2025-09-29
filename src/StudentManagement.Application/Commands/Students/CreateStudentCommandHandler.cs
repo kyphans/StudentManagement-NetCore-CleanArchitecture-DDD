@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Entities;
@@ -10,11 +11,13 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
 {
     private readonly IStudentRepository _studentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public CreateStudentCommandHandler(IStudentRepository studentRepository, IUnitOfWork unitOfWork)
+    public CreateStudentCommandHandler(IStudentRepository studentRepository, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _studentRepository = studentRepository;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<StudentDto>> Handle(CreateStudentCommand request, CancellationToken cancellationToken)
@@ -33,22 +36,7 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
             await _studentRepository.AddAsync(student, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var gpa = student.CalculateGPA();
-            var studentDto = new StudentDto
-            {
-                Id = student.Id.Value,
-                FirstName = student.FirstName,
-                LastName = student.LastName,
-                Email = student.Email.Value,
-                DateOfBirth = student.DateOfBirth,
-                EnrollmentDate = student.EnrollmentDate,
-                IsActive = student.IsActive,
-                FullName = student.FullName,
-                Age = student.Age,
-                GPA = gpa.Value,
-                CreatedAt = student.CreatedAt,
-                UpdatedAt = student.UpdatedAt
-            };
+            var studentDto = _mapper.Map<StudentDto>(student);
 
             return ApiResponseDto<StudentDto>.SuccessResult(studentDto, "Student created successfully");
         }

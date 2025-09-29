@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Repositories;
@@ -7,10 +8,12 @@ namespace StudentManagement.Application.Queries.Enrollments;
 public class GetEnrollmentsQueryHandler : IRequestHandler<GetEnrollmentsQuery, ApiResponseDto<PagedResultDto<EnrollmentSummaryDto>>>
 {
     private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly IMapper _mapper;
 
-    public GetEnrollmentsQueryHandler(IEnrollmentRepository enrollmentRepository)
+    public GetEnrollmentsQueryHandler(IEnrollmentRepository enrollmentRepository, IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<PagedResultDto<EnrollmentSummaryDto>>> Handle(GetEnrollmentsQuery request, CancellationToken cancellationToken)
@@ -65,20 +68,14 @@ public class GetEnrollmentsQueryHandler : IRequestHandler<GetEnrollmentsQuery, A
                 .Take(request.PageSize)
                 .ToList();
 
-            var enrollmentDtos = enrollments.Select(enrollment => new EnrollmentSummaryDto
-            {
-                Id = enrollment.Id,
-                StudentId = enrollment.StudentId.Value,
-                StudentName = "Student", // Would need to join with student data
-                CourseId = enrollment.CourseId,
-                CourseCode = "Course", // Would need to join with course data
-                CourseName = "Course Name", // Would need to join with course data
-                EnrollmentDate = enrollment.EnrollmentDate,
-                Status = enrollment.Status.ToString(),
-                CreditHours = enrollment.CreditHours,
-                FinalGrade = enrollment.Grade?.LetterGrade,
-                GradePoints = enrollment.Grade?.GradePoints
-            }).ToList();
+            var enrollmentDtos = enrollments.Select(enrollment =>
+                _mapper.Map<EnrollmentSummaryDto>(enrollment) with
+                {
+                    // Note: Student and Course names would need to be populated through joins in a real scenario
+                    StudentName = "Student", // Would need to join with student data
+                    CourseCode = "Course", // Would need to join with course data
+                    CourseName = "Course Name" // Would need to join with course data
+                }).ToList();
 
             var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 

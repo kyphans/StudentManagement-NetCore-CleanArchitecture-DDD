@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Repositories;
@@ -7,10 +8,12 @@ namespace StudentManagement.Application.Queries.Courses;
 public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, ApiResponseDto<PagedResultDto<CourseSummaryDto>>>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IMapper _mapper;
 
-    public GetCoursesQueryHandler(ICourseRepository courseRepository)
+    public GetCoursesQueryHandler(ICourseRepository courseRepository, IMapper mapper)
     {
         _courseRepository = courseRepository;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<PagedResultDto<CourseSummaryDto>>> Handle(GetCoursesQuery request, CancellationToken cancellationToken)
@@ -61,18 +64,7 @@ public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, ApiRespon
                 .Take(request.PageSize)
                 .ToList();
 
-            var courseDtos = courses.Select(course => new CourseSummaryDto
-            {
-                Id = course.Id,
-                Code = course.Code.Value,
-                Name = course.Name,
-                CreditHours = course.CreditHours,
-                Department = course.Department,
-                IsActive = course.IsActive,
-                CurrentEnrollmentCount = course.CurrentEnrollmentCount,
-                MaxEnrollment = course.MaxEnrollment,
-                CanEnroll = course.CurrentEnrollmentCount < course.MaxEnrollment && course.IsActive
-            }).ToList();
+            var courseDtos = _mapper.Map<List<CourseSummaryDto>>(courses);
 
             var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 

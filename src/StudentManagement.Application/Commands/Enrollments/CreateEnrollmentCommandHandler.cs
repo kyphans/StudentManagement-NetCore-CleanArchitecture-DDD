@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Entities;
@@ -12,17 +13,20 @@ public class CreateEnrollmentCommandHandler : IRequestHandler<CreateEnrollmentCo
     private readonly IStudentRepository _studentRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
     public CreateEnrollmentCommandHandler(
         IEnrollmentRepository enrollmentRepository,
         IStudentRepository studentRepository,
         ICourseRepository courseRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;
         _studentRepository = studentRepository;
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<EnrollmentDto>> Handle(CreateEnrollmentCommand request, CancellationToken cancellationToken)
@@ -52,32 +56,7 @@ public class CreateEnrollmentCommandHandler : IRequestHandler<CreateEnrollmentCo
             await _enrollmentRepository.AddAsync(enrollment, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var enrollmentDto = new EnrollmentDto
-            {
-                Id = enrollment.Id,
-                StudentId = enrollment.StudentId.Value,
-                CourseId = enrollment.CourseId,
-                EnrollmentDate = enrollment.EnrollmentDate,
-                CompletionDate = enrollment.CompletionDate,
-                Status = enrollment.Status.ToString(),
-                CreditHours = enrollment.CreditHours,
-                Grade = enrollment.Grade != null ? new GradeDto
-                {
-                    Id = enrollment.Grade.Id,
-                    LetterGrade = enrollment.Grade.LetterGrade,
-                    GradePoints = enrollment.Grade.GradePoints,
-                    NumericScore = enrollment.Grade.NumericScore,
-                    Comments = enrollment.Grade.Comments,
-                    GradedDate = enrollment.Grade.GradedDate,
-                    GradedBy = enrollment.Grade.GradedBy,
-                    IsPassing = enrollment.Grade.IsPassing,
-                    IsHonorGrade = enrollment.Grade.IsHonorGrade,
-                    CreatedAt = enrollment.Grade.CreatedAt,
-                    UpdatedAt = enrollment.Grade.UpdatedAt
-                } : null,
-                CreatedAt = enrollment.CreatedAt,
-                UpdatedAt = enrollment.UpdatedAt
-            };
+            var enrollmentDto = _mapper.Map<EnrollmentDto>(enrollment);
 
             return ApiResponseDto<EnrollmentDto>.SuccessResult(enrollmentDto, "Enrollment created successfully");
         }

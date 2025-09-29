@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Entities;
@@ -10,11 +11,13 @@ public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, A
 {
     private readonly ICourseRepository _courseRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public CreateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public CreateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<ApiResponseDto<CourseDto>> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
@@ -35,21 +38,7 @@ public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, A
             await _courseRepository.AddAsync(course, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var courseDto = new CourseDto
-            {
-                Id = course.Id,
-                Code = course.Code.Value,
-                Name = course.Name,
-                Description = course.Description,
-                CreditHours = course.CreditHours,
-                Department = course.Department,
-                IsActive = course.IsActive,
-                MaxEnrollment = course.MaxEnrollment,
-                CurrentEnrollmentCount = course.CurrentEnrollmentCount,
-                Prerequisites = course.Prerequisites.ToList(),
-                CreatedAt = course.CreatedAt,
-                UpdatedAt = course.UpdatedAt
-            };
+            var courseDto = _mapper.Map<CourseDto>(course);
 
             return ApiResponseDto<CourseDto>.SuccessResult(courseDto, "Course created successfully");
         }
