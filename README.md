@@ -1,6 +1,6 @@
 # Student Management System
 
-Một hệ thống quản lý sinh viên toàn diện được xây dựng với Clean Architecture, Domain-Driven Design (DDD) và CQRS pattern sử dụng .NET 8.0.
+Một hệ thống quản lý sinh viên toàn diện được xây dựng với **Hexagonal Architecture (Ports & Adapters)**, **Domain-Driven Design (DDD)** và **CQRS pattern** sử dụng .NET 8.0.
 
 ## 🎯 Tính Năng Chính
 
@@ -9,27 +9,62 @@ Một hệ thống quản lý sinh viên toàn diện được xây dựng với
 - ✅ **Hệ Thống Đăng Ký**: Enrollment workflow với grade tracking
 - ✅ **Tính GPA Tự Động**: Real-time GPA calculation
 - ✅ **API RESTful**: Comprehensive endpoints với Swagger documentation
-- ✅ **Clean Architecture**: 4-layer architecture với dependency inversion
+- ✅ **Hexagonal Architecture**: Ports & Adapters pattern với explicit boundaries
 - ✅ **CQRS Pattern**: Command/Query separation với MediatR
 - ✅ **Validation Pipeline**: FluentValidation integrated
 - ✅ **AutoMapper**: Automatic DTO mapping
 - ✅ **Global Exception Handling**: Centralized error handling
 
-## 🏗️ Kiến Trúc
+## 🏗️ Kiến Trúc Hexagonal (Ports & Adapters)
 
 ```
-┌─────────────────────────────────────┐
-│   WebApi (Presentation Layer)      │  Controllers, Middleware, Swagger
-├─────────────────────────────────────┤
-│   Infrastructure (Data Layer)      │  EF Core, Repositories, Migrations
-├─────────────────────────────────────┤
-│   Application (Use Cases)          │  Commands, Queries, DTOs, Validators
-├─────────────────────────────────────┤
-│   Domain (Business Logic)          │  Entities, Value Objects, Events
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│  PRIMARY ADAPTERS (Driving/Inbound)         │
+│  Adapters.WebApi                             │
+│  - Controllers                               │
+│  - ApplicationServices                       │
+└──────────────────┬───────────────────────────┘
+                   ↓
+┌──────────────────────────────────────────────┐
+│  PRIMARY PORTS (Inbound Interfaces)         │
+│  Application/Ports/                          │
+│  - IStudentManagementPort                    │
+│  - ICourseManagementPort                     │
+│  - IEnrollmentManagementPort                 │
+└──────────────────┬───────────────────────────┘
+                   ↓
+┌─────────────────────────────────────────────┐
+│         APPLICATION CORE (Hexagon)          │
+│                                             │
+│  ┌──────────────────────────────────────┐  │
+│  │ Domain (Pure Business Logic)         │  │
+│  │ - Entities, Value Objects, Events    │  │
+│  └──────────────────────────────────────┘  │
+│                                             │
+│  ┌──────────────────────────────────────┐  │
+│  │ Application (Use Cases)              │  │
+│  │ - Commands/Queries, DTOs, Validators│  │
+│  └──────────────────────────────────────┘  │
+└──────────────────┬──────────────────────────┘
+                   ↓
+┌──────────────────────────────────────────────┐
+│  SECONDARY PORTS (Outbound Interfaces)      │
+│  Domain/Ports/IPersistence/                  │
+│  - IStudentPersistencePort                   │
+│  - ICoursePersistencePort                    │
+│  - IEnrollmentPersistencePort                │
+│  - IUnitOfWorkPort                           │
+└──────────────────┬───────────────────────────┘
+                   ↓
+┌──────────────────────────────────────────────┐
+│  SECONDARY ADAPTERS (Driven/Outbound)       │
+│  Adapters.Persistence                        │
+│  - EfCore*Adapter (implements Ports)         │
+│  - DbContext, Configurations, Migrations     │
+└──────────────────────────────────────────────┘
 ```
 
-**Dependency Flow**: WebApi → Infrastructure → Application → Domain
+**Dependency Flow**: Adapters → Ports → Application Core → Domain
 
 ### Technology Stack
 - **.NET 8.0** - Framework
@@ -136,43 +171,75 @@ curl -X POST "http://localhost:5282/api/enrollments/{enrollment-id}/assign-grade
   }'
 ```
 
-## 🗂️ Cấu Trúc Dự Án
+## 🗂️ Cấu Trúc Dự Án (Hexagonal Architecture)
 
 ```
 StudentManagement/
 ├── src/
-│   ├── StudentManagement.Domain/           # Core business logic
-│   │   ├── Entities/                      # Student, Course, Enrollment, Grade
-│   │   ├── ValueObjects/                  # Email, GPA, CourseCode, etc.
-│   │   ├── Events/                        # Domain events
-│   │   └── Repositories/                  # Repository interfaces
+│   ├── StudentManagement.Domain/                      # 🎯 Domain Core (Hexagon Center)
+│   │   ├── Entities/                                 # Student, Course, Enrollment, Grade
+│   │   ├── ValueObjects/                             # Email, GPA, CourseCode, StudentId
+│   │   ├── Events/                                   # Domain events
+│   │   ├── Services/                                 # Domain services
+│   │   └── Ports/                                    # 🔌 SECONDARY PORTS (Outbound)
+│   │       └── IPersistence/                         # Persistence port interfaces
+│   │           ├── IStudentPersistencePort.cs
+│   │           ├── ICoursePersistencePort.cs
+│   │           ├── IEnrollmentPersistencePort.cs
+│   │           └── IUnitOfWorkPort.cs
 │   │
-│   ├── StudentManagement.Application/      # Use cases (CQRS)
-│   │   ├── Commands/                      # Create, Update, Delete operations
-│   │   ├── Queries/                       # Get, List operations
-│   │   ├── DTOs/                          # Data transfer objects
-│   │   ├── Validators/                    # FluentValidation rules
-│   │   ├── Mappings/                      # AutoMapper profiles
-│   │   └── Common/Behaviors/              # MediatR pipeline behaviors
+│   ├── StudentManagement.Application/                 # 🔄 Application Core (Use Cases)
+│   │   ├── Ports/                                    # 🔌 PRIMARY PORTS (Inbound)
+│   │   │   ├── IStudentManagementPort.cs
+│   │   │   ├── ICourseManagementPort.cs
+│   │   │   └── IEnrollmentManagementPort.cs
+│   │   ├── Commands/                                 # Write operations (CQRS)
+│   │   │   ├── Students/                             # CreateStudentCommand, etc.
+│   │   │   ├── Courses/
+│   │   │   └── Enrollments/
+│   │   ├── Queries/                                  # Read operations (CQRS)
+│   │   │   ├── Students/                             # GetStudentsQuery, etc.
+│   │   │   ├── Courses/
+│   │   │   └── Enrollments/
+│   │   ├── DTOs/                                     # Data transfer objects
+│   │   ├── Validators/                               # FluentValidation rules
+│   │   ├── Mappings/                                 # AutoMapper profiles
+│   │   └── Common/Behaviors/                         # MediatR pipeline behaviors
 │   │
-│   ├── StudentManagement.Infrastructure/   # Data access & external services
-│   │   ├── Data/                          # DbContext & configurations
-│   │   ├── Repositories/                  # Repository implementations
-│   │   └── Migrations/                    # EF Core migrations
+│   ├── StudentManagement.Adapters.Persistence/       # 🔧 SECONDARY ADAPTERS (Driven)
+│   │   ├── Data/                                     # DbContext & configurations
+│   │   │   ├── StudentManagementDbContext.cs
+│   │   │   └── Configurations/                       # EF Core entity configs
+│   │   ├── Repositories/                             # Persistence adapter implementations
+│   │   │   ├── EfCoreRepositoryBase.cs
+│   │   │   ├── EfCoreStudentAdapter.cs              # ← implements IStudentPersistencePort
+│   │   │   ├── EfCoreCourseAdapter.cs               # ← implements ICoursePersistencePort
+│   │   │   ├── EfCoreEnrollmentAdapter.cs           # ← implements IEnrollmentPersistencePort
+│   │   │   └── EfCoreUnitOfWorkAdapter.cs           # ← implements IUnitOfWorkPort
+│   │   └── Migrations/                               # EF Core migrations
 │   │
-│   └── StudentManagement.WebApi/          # API presentation layer
-│       ├── Controllers/                   # API controllers
-│       ├── Middleware/                    # Exception handling, etc.
-│       └── Program.cs                     # Application entry point
+│   └── StudentManagement.Adapters.WebApi/            # 🌐 PRIMARY ADAPTERS (Driving)
+│       ├── Controllers/                              # REST API endpoints
+│       │   ├── StudentsController.cs                 # ← depends on IStudentManagementPort
+│       │   ├── CoursesController.cs
+│       │   └── EnrollmentsController.cs
+│       ├── ApplicationServices/                      # Primary port implementations
+│       │   ├── StudentApplicationService.cs          # ← implements IStudentManagementPort
+│       │   ├── CourseApplicationService.cs
+│       │   └── EnrollmentApplicationService.cs
+│       ├── Middleware/                               # Exception handling, etc.
+│       ├── Program.cs                                # Application entry point
+│       └── DependencyInjection.cs                    # DI configuration
 │
-├── docs/                                   # Documentation (Vietnamese)
-│   ├── project-overview-pdr.md
-│   ├── codebase-summary.md
-│   ├── code-standards.md
-│   └── system-architecture.md
+├── docs/                                              # Documentation (Vietnamese)
+│   ├── project-overview-pdr.md                       # Project overview & PDR
+│   ├── codebase-summary.md                           # Codebase summary
+│   ├── code-standards.md                             # Coding standards
+│   ├── system-architecture.md                        # Architecture details
+│   └── ARCHITECTURE_EXPLANATION_VN.md                # Hexagonal architecture explanation
 │
 ├── README.md
-└── CLAUDE.md                              # AI assistant guidance
+└── CLAUDE.md                                          # AI assistant guidance
 ```
 
 ## 🔧 Database Operations
@@ -180,22 +247,22 @@ StudentManagement/
 ### Tạo Migration Mới
 ```bash
 dotnet ef migrations add <MigrationName> \
-    -p src/StudentManagement.Infrastructure \
-    -s src/StudentManagement.WebApi
+    -p src/StudentManagement.Adapters.Persistence \
+    -s src/StudentManagement.Adapters.WebApi
 ```
 
 ### Apply Migrations
 ```bash
 dotnet ef database update \
-    -p src/StudentManagement.Infrastructure \
-    -s src/StudentManagement.WebApi
+    -p src/StudentManagement.Adapters.Persistence \
+    -s src/StudentManagement.Adapters.WebApi
 ```
 
 ### Remove Last Migration
 ```bash
 dotnet ef migrations remove \
-    -p src/StudentManagement.Infrastructure \
-    -s src/StudentManagement.WebApi
+    -p src/StudentManagement.Adapters.Persistence \
+    -s src/StudentManagement.Adapters.WebApi
 ```
 
 ## 📊 API Endpoints
@@ -233,27 +300,39 @@ dotnet ef migrations remove \
 
 ## ✨ Key Design Patterns
 
-### Clean Architecture
-- **Domain Layer**: Không dependencies, chứa business logic
-- **Application Layer**: Use cases, chỉ phụ thuộc Domain
-- **Infrastructure Layer**: Data access, phụ thuộc Domain + Application
-- **WebApi Layer**: Presentation, phụ thuộc tất cả layers
+### Hexagonal Architecture (Ports & Adapters)
+- **Domain Core**: Pure business logic, không dependencies
+- **Application Core**: Use cases, orchestration logic
+- **Primary Ports**: Inbound interfaces (IStudentManagementPort, etc.)
+- **Secondary Ports**: Outbound interfaces (IPersistencePort, etc.)
+- **Primary Adapters**: HTTP API (Controllers, ApplicationServices)
+- **Secondary Adapters**: Database (EfCore*Adapter)
+
+**Benefits**:
+- Framework-agnostic core logic
+- Database-agnostic persistence
+- Easy to test (mock adapters)
+- Clear boundaries between layers
+- Technology independence
 
 ### CQRS (Command Query Responsibility Segregation)
 - **Commands**: Modify data (CreateStudentCommand, UpdateCourseCommand)
 - **Queries**: Read data (GetStudentsQuery, GetCourseByIdQuery)
 - **Handlers**: One handler per command/query
+- **MediatR**: Pipeline implementation
 
-### Repository Pattern
-- Abstractions trong Domain layer
-- Implementations trong Infrastructure layer
-- Unit of Work cho transaction management
+### Ports Pattern (thay thế Repository Pattern)
+- **Primary Ports**: Application service interfaces
+- **Secondary Ports**: Persistence interfaces trong Domain
+- **Adapters**: Concrete implementations
+- **Rõ ràng về direction**: Inbound vs Outbound
 
 ### Domain-Driven Design
 - **Entities**: Rich domain models (Student, Course, Enrollment)
-- **Value Objects**: Immutable types (Email, GPA, CourseCode)
+- **Value Objects**: Immutable types (Email, GPA, CourseCode, StudentId)
 - **Aggregates**: Aggregate roots với boundaries rõ ràng
 - **Domain Events**: Capture business events
+- **Domain Services**: Complex business logic không thuộc về entity
 
 ## 🔒 Security (Planned)
 
@@ -352,9 +431,16 @@ Development: `src/StudentManagement.WebApi/bin/Debug/net8.0/studentmanagement.db
 - ✅ **Phase 1**: Project setup & architecture
 - ✅ **Phase 2**: Domain layer implementation
 - ✅ **Phase 3**: Application layer (CQRS)
-- ✅ **Phase 4**: Infrastructure layer (EF Core, repositories)
-- ✅ **Phase 5**: WebApi layer (controllers, middleware)
-- 🔄 **Phase 6**: Enhancements
+- ✅ **Phase 4**: Infrastructure layer → **Migrated to Adapters.Persistence**
+- ✅ **Phase 5**: WebApi layer → **Migrated to Adapters.WebApi**
+- ✅ **Phase 6**: **Hexagonal Architecture Migration** ✨
+  - ✅ Repository interfaces → Persistence Ports
+  - ✅ Infrastructure → Adapters.Persistence
+  - ✅ WebApi → Adapters.WebApi
+  - ✅ Application Services → Primary Ports
+  - ✅ EfCore*Adapter → Secondary Adapters
+  - ✅ Documentation update
+- 🔄 **Phase 7**: Testing & Enhancements
   - Unit & integration tests
   - JWT authentication & authorization
   - Advanced filtering & search
@@ -379,16 +465,25 @@ MIT License - see [LICENSE](LICENSE) file for details
 ## 🎓 Learning Resources
 
 Dự án này là ví dụ tốt để học:
-- Clean Architecture principles
-- Domain-Driven Design (DDD)
-- CQRS pattern
-- Repository pattern
-- Unit of Work pattern
-- Value Objects
-- Entity Framework Core
-- MediatR
-- FluentValidation
-- AutoMapper
+- **Hexagonal Architecture (Ports & Adapters)** ⭐
+- **Domain-Driven Design (DDD)**
+- **CQRS pattern** với MediatR
+- **Ports Pattern** (thay thế Repository Pattern)
+- **Unit of Work pattern**
+- **Value Objects** & **Strongly-typed IDs**
+- **Entity Framework Core** với Value Object conversions
+- **MediatR** với Pipeline Behaviors
+- **FluentValidation** trong pipeline
+- **AutoMapper** với custom value object mappings
+- **Dependency Injection** theo layers
+- **Clean Code** & **SOLID Principles**
+
+## 📚 Additional Resources
+
+- [Hexagonal Architecture Explanation (Vietnamese)](docs/ARCHITECTURE_EXPLANATION_VN.md)
+- [System Architecture Details](docs/system-architecture.md)
+- [Coding Standards](docs/code-standards.md)
+- [Codebase Summary](docs/codebase-summary.md)
 
 ---
 **Version**: 1.0.0
