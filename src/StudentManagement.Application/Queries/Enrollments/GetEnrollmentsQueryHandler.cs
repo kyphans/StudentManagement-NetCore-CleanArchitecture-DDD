@@ -1,16 +1,16 @@
 using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 
 namespace StudentManagement.Application.Queries.Enrollments;
 
 public class GetEnrollmentsQueryHandler : IRequestHandler<GetEnrollmentsQuery, ApiResponseDto<PagedResultDto<EnrollmentSummaryDto>>>
 {
-    private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
     private readonly IMapper _mapper;
 
-    public GetEnrollmentsQueryHandler(IEnrollmentRepository enrollmentRepository, IMapper mapper)
+    public GetEnrollmentsQueryHandler(IEnrollmentPersistencePort enrollmentRepository, IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;
         _mapper = mapper;

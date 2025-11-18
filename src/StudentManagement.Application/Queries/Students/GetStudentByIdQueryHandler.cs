@@ -1,17 +1,17 @@
 using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Queries.Students;
 
 public class GetStudentByIdQueryHandler : IRequestHandler<GetStudentByIdQuery, ApiResponseDto<StudentDto>>
 {
-    private readonly IStudentRepository _studentRepository;
+    private readonly IStudentPersistencePort _studentRepository;
     private readonly IMapper _mapper;
 
-    public GetStudentByIdQueryHandler(IStudentRepository studentRepository, IMapper mapper)
+    public GetStudentByIdQueryHandler(IStudentPersistencePort studentRepository, IMapper mapper)
     {
         _studentRepository = studentRepository;
         _mapper = mapper;

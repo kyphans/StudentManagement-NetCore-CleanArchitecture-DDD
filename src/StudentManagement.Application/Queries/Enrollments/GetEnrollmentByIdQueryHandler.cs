@@ -1,22 +1,22 @@
 using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Queries.Enrollments;
 
 public class GetEnrollmentByIdQueryHandler : IRequestHandler<GetEnrollmentByIdQuery, ApiResponseDto<EnrollmentWithDetailsDto>>
 {
-    private readonly IEnrollmentRepository _enrollmentRepository;
-    private readonly IStudentRepository _studentRepository;
-    private readonly ICourseRepository _courseRepository;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
+    private readonly IStudentPersistencePort _studentRepository;
+    private readonly ICoursePersistencePort _courseRepository;
     private readonly IMapper _mapper;
 
     public GetEnrollmentByIdQueryHandler(
-        IEnrollmentRepository enrollmentRepository,
-        IStudentRepository studentRepository,
-        ICourseRepository courseRepository,
+        IEnrollmentPersistencePort enrollmentRepository,
+        IStudentPersistencePort studentRepository,
+        ICoursePersistencePort courseRepository,
         IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;

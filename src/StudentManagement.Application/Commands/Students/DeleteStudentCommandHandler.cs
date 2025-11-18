@@ -1,16 +1,16 @@
 using MediatR;
 using StudentManagement.Application.DTOs;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Commands.Students;
 
 public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand, ApiResponseDto<bool>>
 {
-    private readonly IStudentRepository _studentRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IStudentPersistencePort _studentRepository;
+    private readonly IUnitOfWorkPort _unitOfWork;
 
-    public DeleteStudentCommandHandler(IStudentRepository studentRepository, IUnitOfWork unitOfWork)
+    public DeleteStudentCommandHandler(IStudentPersistencePort studentRepository, IUnitOfWorkPort unitOfWork)
     {
         _studentRepository = studentRepository;
         _unitOfWork = unitOfWork;

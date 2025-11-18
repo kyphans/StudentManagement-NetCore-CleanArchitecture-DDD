@@ -2,24 +2,24 @@ using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Entities;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Commands.Enrollments;
 
 public class CreateEnrollmentCommandHandler : IRequestHandler<CreateEnrollmentCommand, ApiResponseDto<EnrollmentDto>>
 {
-    private readonly IEnrollmentRepository _enrollmentRepository;
-    private readonly IStudentRepository _studentRepository;
-    private readonly ICourseRepository _courseRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
+    private readonly IStudentPersistencePort _studentRepository;
+    private readonly ICoursePersistencePort _courseRepository;
+    private readonly IUnitOfWorkPort _unitOfWork;
     private readonly IMapper _mapper;
 
     public CreateEnrollmentCommandHandler(
-        IEnrollmentRepository enrollmentRepository,
-        IStudentRepository studentRepository,
-        ICourseRepository courseRepository,
-        IUnitOfWork unitOfWork,
+        IEnrollmentPersistencePort enrollmentRepository,
+        IStudentPersistencePort studentRepository,
+        ICoursePersistencePort courseRepository,
+        IUnitOfWorkPort unitOfWork,
         IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;

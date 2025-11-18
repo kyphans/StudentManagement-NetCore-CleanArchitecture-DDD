@@ -1,15 +1,15 @@
 using FluentValidation;
 using StudentManagement.Application.Commands.Students;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Validators.Students;
 
 public class UpdateStudentCommandValidator : AbstractValidator<UpdateStudentCommand>
 {
-    private readonly IStudentRepository _studentRepository;
+    private readonly IStudentPersistencePort _studentRepository;
 
-    public UpdateStudentCommandValidator(IStudentRepository studentRepository)
+    public UpdateStudentCommandValidator(IStudentPersistencePort studentRepository)
     {
         _studentRepository = studentRepository;
 

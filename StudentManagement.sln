@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.Domain", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.Application", "src\StudentManagement.Application\StudentManagement.Application.csproj", "{1E40999C-8E64-4013-A48D-330200903D14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.Infrastructure", "src\StudentManagement.Infrastructure\StudentManagement.Infrastructure.csproj", "{50A92BEE-182B-4E67-9CCD-90D30B67ACA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.Adapters.Persistence", "src\StudentManagement.Adapters.Persistence\StudentManagement.Adapters.Persistence.csproj", "{50A92BEE-182B-4E67-9CCD-90D30B67ACA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.WebApi", "src\StudentManagement.WebApi\StudentManagement.WebApi.csproj", "{DB1286BF-13EF-45C4-A3F8-437FC696AA06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.Adapters.WebApi", "src\StudentManagement.Adapters.WebApi\StudentManagement.Adapters.WebApi.csproj", "{DB1286BF-13EF-45C4-A3F8-437FC696AA06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

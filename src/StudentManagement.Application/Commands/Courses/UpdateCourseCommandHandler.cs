@@ -1,18 +1,18 @@
 using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Commands.Courses;
 
 public class UpdateCourseCommandHandler : IRequestHandler<UpdateCourseCommand, ApiResponseDto<CourseDto>>
 {
-    private readonly ICourseRepository _courseRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICoursePersistencePort _courseRepository;
+    private readonly IUnitOfWorkPort _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public UpdateCourseCommandHandler(ICoursePersistencePort courseRepository, IUnitOfWorkPort unitOfWork, IMapper mapper)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;

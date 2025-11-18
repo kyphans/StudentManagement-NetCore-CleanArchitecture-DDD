@@ -1,20 +1,20 @@
 using FluentValidation;
 using StudentManagement.Application.Commands.Enrollments;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Validators.Enrollments;
 
 public class CreateEnrollmentCommandValidator : AbstractValidator<CreateEnrollmentCommand>
 {
-    private readonly IStudentRepository _studentRepository;
-    private readonly ICourseRepository _courseRepository;
-    private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly IStudentPersistencePort _studentRepository;
+    private readonly ICoursePersistencePort _courseRepository;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
 
     public CreateEnrollmentCommandValidator(
-        IStudentRepository studentRepository,
-        ICourseRepository courseRepository,
-        IEnrollmentRepository enrollmentRepository)
+        IStudentPersistencePort studentRepository,
+        ICoursePersistencePort courseRepository,
+        IEnrollmentPersistencePort enrollmentRepository)
     {
         _studentRepository = studentRepository;
         _courseRepository = courseRepository;

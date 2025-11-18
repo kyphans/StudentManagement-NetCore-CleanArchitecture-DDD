@@ -1,16 +1,16 @@
 using FluentValidation;
 using StudentManagement.Application.Commands.Courses;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Validators.Courses;
 
 public class DeleteCourseCommandValidator : AbstractValidator<DeleteCourseCommand>
 {
-    private readonly ICourseRepository _courseRepository;
-    private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly ICoursePersistencePort _courseRepository;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
 
-    public DeleteCourseCommandValidator(ICourseRepository courseRepository, IEnrollmentRepository enrollmentRepository)
+    public DeleteCourseCommandValidator(ICoursePersistencePort courseRepository, IEnrollmentPersistencePort enrollmentRepository)
     {
         _courseRepository = courseRepository;
         _enrollmentRepository = enrollmentRepository;

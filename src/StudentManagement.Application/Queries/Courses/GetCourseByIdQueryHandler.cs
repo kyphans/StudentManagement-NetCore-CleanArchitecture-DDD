@@ -1,17 +1,17 @@
 using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Queries.Courses;
 
 public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, ApiResponseDto<CourseDto>>
 {
-    private readonly ICourseRepository _courseRepository;
+    private readonly ICoursePersistencePort _courseRepository;
     private readonly IMapper _mapper;
 
-    public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IMapper mapper)
+    public GetCourseByIdQueryHandler(ICoursePersistencePort courseRepository, IMapper mapper)
     {
         _courseRepository = courseRepository;
         _mapper = mapper;

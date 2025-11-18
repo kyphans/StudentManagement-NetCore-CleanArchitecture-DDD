@@ -1,15 +1,15 @@
 using FluentValidation;
 using StudentManagement.Application.Commands.Courses;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Validators.Courses;
 
 public class CreateCourseCommandValidator : AbstractValidator<CreateCourseCommand>
 {
-    private readonly ICourseRepository _courseRepository;
+    private readonly ICoursePersistencePort _courseRepository;
 
-    public CreateCourseCommandValidator(ICourseRepository courseRepository)
+    public CreateCourseCommandValidator(ICoursePersistencePort courseRepository)
     {
         _courseRepository = courseRepository;
 

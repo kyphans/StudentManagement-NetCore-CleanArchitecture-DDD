@@ -2,18 +2,18 @@ using AutoMapper;
 using MediatR;
 using StudentManagement.Application.DTOs;
 using StudentManagement.Domain.Entities;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 using StudentManagement.Domain.ValueObjects;
 
 namespace StudentManagement.Application.Commands.Enrollments;
 
 public class AssignGradeCommandHandler : IRequestHandler<AssignGradeCommand, ApiResponseDto<EnrollmentDto>>
 {
-    private readonly IEnrollmentRepository _enrollmentRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
+    private readonly IUnitOfWorkPort _unitOfWork;
     private readonly IMapper _mapper;
 
-    public AssignGradeCommandHandler(IEnrollmentRepository enrollmentRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public AssignGradeCommandHandler(IEnrollmentPersistencePort enrollmentRepository, IUnitOfWorkPort unitOfWork, IMapper mapper)
     {
         _enrollmentRepository = enrollmentRepository;
         _unitOfWork = unitOfWork;

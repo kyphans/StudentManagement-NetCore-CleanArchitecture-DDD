@@ -1,315 +1,395 @@
 # Student Management System
 
-A comprehensive student management system built with Clean Architecture, Domain-Driven Design (DDD), and CQRS patterns using .NET 8.0 and SQLite.
+Một hệ thống quản lý sinh viên toàn diện được xây dựng với Clean Architecture, Domain-Driven Design (DDD) và CQRS pattern sử dụng .NET 8.0.
 
-## 🏗️ Architecture
+## 🎯 Tính Năng Chính
 
-This project implements **Clean Architecture** with the following layers:
-- **Domain**: Core business logic and entities
-- **Application**: Use cases and CQRS handlers
-- **Infrastructure**: Data access and external services
-- **WebApi**: REST API controllers and presentation
+- ✅ **Quản Lý Sinh Viên**: CRUD operations với validation toàn diện
+- ✅ **Quản Lý Khóa Học**: Tạo và quản lý courses với prerequisites
+- ✅ **Hệ Thống Đăng Ký**: Enrollment workflow với grade tracking
+- ✅ **Tính GPA Tự Động**: Real-time GPA calculation
+- ✅ **API RESTful**: Comprehensive endpoints với Swagger documentation
+- ✅ **Clean Architecture**: 4-layer architecture với dependency inversion
+- ✅ **CQRS Pattern**: Command/Query separation với MediatR
+- ✅ **Validation Pipeline**: FluentValidation integrated
+- ✅ **AutoMapper**: Automatic DTO mapping
+- ✅ **Global Exception Handling**: Centralized error handling
 
-### Key Patterns
-- **Clean Architecture** with proper dependency inversion
-- **Domain-Driven Design (DDD)** with rich domain models
-- **CQRS** pattern using MediatR
-- **Repository Pattern** with Unit of Work
-- **AutoMapper** for object-to-object mapping
-- **FluentValidation** pipeline for input validation
+## 🏗️ Kiến Trúc
 
-## 🚀 Features
-- **Student Management**: Create, read, update students with validation
-- **Course Management**: Manage courses with prerequisites and enrollment limits
-- **Enrollment System**: Handle student course enrollments and grading
-- **Global Exception Handling**: Centralized error handling middleware
-- **Response Compression**: Gzip compression for better performance
-- **API Documentation**: Enhanced Swagger/OpenAPI documentation
-- **Validation Pipeline**: FluentValidation integrated with MediatR
-- **AutoMapper Integration**: Automatic entity-to-DTO mapping
-- **Performance Optimization**: Database-level filtering and pagination
-- **Caching Layer**: Redis or in-memory caching
-- **Advanced Features**: Bulk operations, reporting, file handling
-- **Production Readiness**: Docker, health checks, monitoring
+```
+┌─────────────────────────────────────┐
+│   WebApi (Presentation Layer)      │  Controllers, Middleware, Swagger
+├─────────────────────────────────────┤
+│   Infrastructure (Data Layer)      │  EF Core, Repositories, Migrations
+├─────────────────────────────────────┤
+│   Application (Use Cases)          │  Commands, Queries, DTOs, Validators
+├─────────────────────────────────────┤
+│   Domain (Business Logic)          │  Entities, Value Objects, Events
+└─────────────────────────────────────┘
+```
 
-## 📋 Prerequisites
+**Dependency Flow**: WebApi → Infrastructure → Application → Domain
 
+### Technology Stack
+- **.NET 8.0** - Framework
+- **ASP.NET Core** - Web API
+- **Entity Framework Core 8.0** - ORM
+- **SQLite** - Database (development)
+- **MediatR** - CQRS implementation
+- **AutoMapper** - Object mapping
+- **FluentValidation** - Input validation
+- **Swagger/OpenAPI** - API documentation
+- **Serilog** - Structured logging
+
+## 📚 Tài Liệu Chi Tiết
+
+Tài liệu đầy đủ bằng tiếng Việt có trong thư mục `docs/`:
+
+- **[Tổng Quan Dự Án & PDR](docs/project-overview-pdr.md)** - Vision, goals, yêu cầu chức năng & phi chức năng
+- **[Tóm Tắt Codebase](docs/codebase-summary.md)** - High-level overview của codebase, các layer và components
+- **[Chuẩn Mã](docs/code-standards.md)** - Coding standards, naming conventions, best practices
+- **[Kiến Trúc Hệ Thống](docs/system-architecture.md)** - Chi tiết architecture, patterns và design decisions
+
+## 🚀 Quick Start
+
+### Yêu Cầu
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQLite](https://www.sqlite.org/) (included with .NET)
-- IDE: [Visual Studio](https://visualstudio.microsoft.com/), [VS Code](https://code.visualstudio.com/), or [JetBrains Rider](https://www.jetbrains.com/rider/)
+- IDE: [Visual Studio](https://visualstudio.microsoft.com/), [VS Code](https://code.visualstudio.com/), hoặc [JetBrains Rider](https://www.jetbrains.com/rider/)
 
-## 🛠️ Installation
+### Cài Đặt
 
-### 1. Clone the Repository
 ```bash
+# 1. Clone repository
 git clone <repository-url>
 cd StudentManagement
-```
 
-### 2. Restore Dependencies
-```bash
+# 2. Restore dependencies
 dotnet restore
-```
 
-### 3. Build the Solution
-```bash
+# 3. Build solution
 dotnet build
-```
 
-### 4. Initialize Database
-```bash
-# Create and apply migrations
+# 4. Apply database migrations
 dotnet ef database update -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-```
 
-### 5. Run the Application
-```bash
+# 5. Run application
 dotnet run --project src/StudentManagement.WebApi
 ```
 
-The API will be available at `http://localhost:5282`
+API sẽ chạy tại: `http://localhost:5282`
 
-## 📖 Usage
+### Swagger UI
+Truy cập API documentation tại: `http://localhost:5282/swagger`
 
-### API Documentation
-Once the application is running, access the Swagger UI at:
-- **Swagger UI**: `http://localhost:5282/swagger`
-- **API Docs**: `http://localhost:5282/swagger/v1/swagger.json`
+## 📖 API Usage Examples
 
-### Sample API Calls
-
-#### Create a Student
+### Tạo Student
 ```bash
 curl -X POST "http://localhost:5282/api/students" \
   -H "Content-Type: application/json" \
   -d '{
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john.doe@email.com",
-    "dateOfBirth": "2000-01-15",
-    "phoneNumber": "555-0123",
-    "address": "123 Main St"
+    "firstName": "Nguyễn",
+    "lastName": "Văn A",
+    "email": "nguyenvana@email.com",
+    "dateOfBirth": "2000-01-15"
   }'
 ```
 
-#### Create a Course
+### Lấy Danh Sách Students (có filter)
+```bash
+curl "http://localhost:5282/api/students?searchTerm=Nguyen&isActive=true&pageNumber=1&pageSize=10"
+```
+
+### Tạo Course
 ```bash
 curl -X POST "http://localhost:5282/api/courses" \
   -H "Content-Type: application/json" \
   -d '{
     "code": "CS101",
-    "name": "Introduction to Computer Science",
-    "description": "Fundamental concepts of computer science",
+    "name": "Nhập Môn Khoa Học Máy Tính",
+    "description": "Các khái niệm cơ bản về khoa học máy tính",
     "creditHours": 3,
-    "department": "Computer Science",
+    "department": "Khoa Học Máy Tính",
     "maxEnrollment": 30
   }'
 ```
 
-#### Get Students (with filtering)
+### Đăng Ký Khóa Học
 ```bash
-curl "http://localhost:5282/api/students?pageNumber=1&pageSize=10&searchTerm=John&isActive=true"
+curl -X POST "http://localhost:5282/api/enrollments" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "studentId": "student-guid-here",
+    "courseId": "course-guid-here"
+  }'
 ```
 
-## 🏛️ Project Structure
-
-```
-src/
-├── StudentManagement.Domain/           # Core business logic
-│   ├── Entities/                      # Domain entities (Student, Course, Enrollment)
-│   ├── ValueObjects/                  # Value objects (Email, GPA, CourseCode)
-│   ├── Events/                        # Domain events
-│   └── Repositories/                  # Repository interfaces
-├── StudentManagement.Application/      # Use cases & CQRS
-│   ├── Commands/                      # Write operations (Create, Update)
-│   ├── Queries/                       # Read operations (Get, List)
-│   ├── DTOs/                          # Data transfer objects
-│   ├── Behaviors/                     # Cross-cutting concerns
-│   ├── Validators/                    # FluentValidation rules
-│   └── Mappings/                      # AutoMapper profiles
-├── StudentManagement.Infrastructure/   # Data access & external services
-│   ├── Data/                          # EF Core DbContext & configurations
-│   ├── Repositories/                  # Repository implementations
-│   └── Migrations/                    # Database migrations
-└── StudentManagement.WebApi/          # REST API & presentation
-    ├── Controllers/                   # API controllers
-    ├── Middleware/                    # Custom middleware
-    └── Program.cs                     # Application entry point
-```
-
-## 🔧 Configuration
-
-### Database
-The application uses SQLite by default. The database file `studentmanagement.db` will be created in the WebApi output directory.
-
-### Connection String
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Data Source=studentmanagement.db"
-  }
-}
-```
-
-### CORS
-Development CORS policy allows all origins. Configure appropriately for production in `appsettings.json`.
-
-## 🧪 Testing
-
-### Manual API Testing
-The project includes comprehensive API testing through Swagger UI and curl commands.
-
-### Running Tests
+### Chấm Điểm
 ```bash
-# Build and verify no compilation errors
-dotnet build
-
-# Run the application for integration testing
-dotnet run --project src/StudentManagement.WebApi
+curl -X POST "http://localhost:5282/api/enrollments/{enrollment-id}/assign-grade" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "letterGrade": "A",
+    "numericScore": 95.5,
+    "comments": "Excellent performance"
+  }'
 ```
 
-**Note**: Unit and integration test projects will be added in future phases.
+## 🗂️ Cấu Trúc Dự Án
 
-## 📚 API Reference
+```
+StudentManagement/
+├── src/
+│   ├── StudentManagement.Domain/           # Core business logic
+│   │   ├── Entities/                      # Student, Course, Enrollment, Grade
+│   │   ├── ValueObjects/                  # Email, GPA, CourseCode, etc.
+│   │   ├── Events/                        # Domain events
+│   │   └── Repositories/                  # Repository interfaces
+│   │
+│   ├── StudentManagement.Application/      # Use cases (CQRS)
+│   │   ├── Commands/                      # Create, Update, Delete operations
+│   │   ├── Queries/                       # Get, List operations
+│   │   ├── DTOs/                          # Data transfer objects
+│   │   ├── Validators/                    # FluentValidation rules
+│   │   ├── Mappings/                      # AutoMapper profiles
+│   │   └── Common/Behaviors/              # MediatR pipeline behaviors
+│   │
+│   ├── StudentManagement.Infrastructure/   # Data access & external services
+│   │   ├── Data/                          # DbContext & configurations
+│   │   ├── Repositories/                  # Repository implementations
+│   │   └── Migrations/                    # EF Core migrations
+│   │
+│   └── StudentManagement.WebApi/          # API presentation layer
+│       ├── Controllers/                   # API controllers
+│       ├── Middleware/                    # Exception handling, etc.
+│       └── Program.cs                     # Application entry point
+│
+├── docs/                                   # Documentation (Vietnamese)
+│   ├── project-overview-pdr.md
+│   ├── codebase-summary.md
+│   ├── code-standards.md
+│   └── system-architecture.md
+│
+├── README.md
+└── CLAUDE.md                              # AI assistant guidance
+```
+
+## 🔧 Database Operations
+
+### Tạo Migration Mới
+```bash
+dotnet ef migrations add <MigrationName> \
+    -p src/StudentManagement.Infrastructure \
+    -s src/StudentManagement.WebApi
+```
+
+### Apply Migrations
+```bash
+dotnet ef database update \
+    -p src/StudentManagement.Infrastructure \
+    -s src/StudentManagement.WebApi
+```
+
+### Remove Last Migration
+```bash
+dotnet ef migrations remove \
+    -p src/StudentManagement.Infrastructure \
+    -s src/StudentManagement.WebApi
+```
+
+## 📊 API Endpoints
 
 ### Students API
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/students` | Get paginated students with filtering |
-| GET | `/api/students/{id}` | Get student by ID |
-| POST | `/api/students` | Create new student |
-| PUT | `/api/students/{id}` | Update existing student |
+| GET | `/api/students` | Lấy danh sách students (có filter & pagination) |
+| GET | `/api/students/{id}` | Lấy student theo ID |
+| POST | `/api/students` | Tạo student mới |
+| PUT | `/api/students/{id}` | Cập nhật student |
+| DELETE | `/api/students/{id}` | Xóa student (soft delete) |
 
 ### Courses API
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/courses` | Get paginated courses with filtering |
-| GET | `/api/courses/{id}` | Get course by ID |
-| POST | `/api/courses` | Create new course |
-| PUT | `/api/courses/{id}` | Update existing course |
+| GET | `/api/courses` | Lấy danh sách courses |
+| GET | `/api/courses/{id}` | Lấy course theo ID |
+| POST | `/api/courses` | Tạo course mới |
+| PUT | `/api/courses/{id}` | Cập nhật course |
+| DELETE | `/api/courses/{id}` | Xóa course (soft delete) |
 
 ### Enrollments API
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/enrollments` | Get paginated enrollments with filtering |
-| GET | `/api/enrollments/{id}` | Get enrollment by ID |
-| POST | `/api/enrollments` | Create new enrollment |
-| POST | `/api/enrollments/{id}/assign-grade` | Assign grade to enrollment |
+| GET | `/api/enrollments` | Lấy danh sách enrollments |
+| GET | `/api/enrollments/{id}` | Lấy enrollment theo ID |
+| POST | `/api/enrollments` | Tạo enrollment mới |
+| POST | `/api/enrollments/{id}/assign-grade` | Chấm điểm cho enrollment |
 
-### Response Format
-All API responses follow this structure:
-```json
-{
-  "success": true,
-  "data": { ... },
-  "message": "Operation completed successfully",
-  "errors": [],
-  "timestamp": "2025-01-29T10:13:34.914429Z"
-}
-```
+### Health Check
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Kiểm tra trạng thái hệ thống |
+
+## ✨ Key Design Patterns
+
+### Clean Architecture
+- **Domain Layer**: Không dependencies, chứa business logic
+- **Application Layer**: Use cases, chỉ phụ thuộc Domain
+- **Infrastructure Layer**: Data access, phụ thuộc Domain + Application
+- **WebApi Layer**: Presentation, phụ thuộc tất cả layers
+
+### CQRS (Command Query Responsibility Segregation)
+- **Commands**: Modify data (CreateStudentCommand, UpdateCourseCommand)
+- **Queries**: Read data (GetStudentsQuery, GetCourseByIdQuery)
+- **Handlers**: One handler per command/query
+
+### Repository Pattern
+- Abstractions trong Domain layer
+- Implementations trong Infrastructure layer
+- Unit of Work cho transaction management
+
+### Domain-Driven Design
+- **Entities**: Rich domain models (Student, Course, Enrollment)
+- **Value Objects**: Immutable types (Email, GPA, CourseCode)
+- **Aggregates**: Aggregate roots với boundaries rõ ràng
+- **Domain Events**: Capture business events
+
+## 🔒 Security (Planned)
+
+Authentication và Authorization sẽ được implement trong Phase 6:
+- JWT Bearer tokens
+- Role-based access control (Admin, Teacher, Student, Staff)
+- Password hashing
+- Token refresh mechanism
+
+## 🧪 Testing (Planned)
+
+Test projects sẽ được thêm trong Phase 6:
+- **Unit Tests**: Domain entities, value objects, handlers
+- **Integration Tests**: API endpoints, repositories
+- **E2E Tests**: Full workflow testing
+
+## 📈 Performance Features
+
+**Current**:
+- ✅ Async/await throughout
+- ✅ Response compression (Gzip)
+- ✅ EF Core connection pooling
+- ✅ AutoMapper optimizations
+
+**Planned**:
+- Database-level filtering
+- Response caching
+- Redis distributed cache
+- Query optimization
+- Database indexing
 
 ## 🛡️ Error Handling
 
-The application includes comprehensive error handling:
-- **Global Exception Middleware**: Catches and formats all exceptions
-- **Validation Errors**: FluentValidation errors returned with 400 status
-- **Not Found**: 404 errors for missing resources
-- **Server Errors**: 500 errors for unexpected exceptions
-
-## 📦 Dependencies
-
-### Core Dependencies
-- **.NET 8.0**: Target framework
-- **MediatR**: CQRS pattern implementation
-- **Entity Framework Core**: ORM and SQLite provider
-- **AutoMapper**: Object-to-object mapping
-- **FluentValidation**: Input validation
-
-### Development Dependencies
-- **Swashbuckle.AspNetCore**: API documentation
-- **Microsoft.EntityFrameworkCore.Tools**: EF Core CLI tools
-
-## 🚀 Deployment
-
-### Development
-```bash
-dotnet run --project src/StudentManagement.WebApi
+### Standardized Response Format
+```json
+{
+  "success": true/false,
+  "data": { ... },
+  "message": "Operation message",
+  "errors": ["Error 1", "Error 2"],
+  "timestamp": "2025-01-17T10:00:00Z"
+}
 ```
 
-### Production Build
-```bash
-dotnet publish -c Release -o ./publish
-```
-
-### Database Migrations
-```bash
-# Add new migration
-dotnet ef migrations add <MigrationName> -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-
-# Update database
-dotnet ef database update -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-```
-
-## 🔄 Development Workflow
-
-### Essential Commands
-```bash
-# Build and run
-dotnet build
-dotnet run --project src/StudentManagement.WebApi
-
-# Database operations
-dotnet ef migrations add <Name> -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-dotnet ef database update -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-
-# Clean and rebuild
-dotnet clean
-dotnet build
-```
-
-## 📈 Performance
-
-### Current Performance Characteristics
-- **In-Memory Operations**: Filtering and pagination currently done in memory
-- **Response Compression**: Gzip compression enabled
-- **AutoMapper**: Optimized object mapping
-- **Connection Pooling**: EF Core connection pooling enabled
-
-### Optimization Opportunities (Phase 6)
-- Move filtering/pagination to database level
-- Add response caching
-- Implement database indexing
-- Add performance monitoring
+### HTTP Status Codes
+- **200 OK**: Thành công
+- **201 Created**: Resource created
+- **400 Bad Request**: Validation errors
+- **404 Not Found**: Resource không tồn tại
+- **500 Internal Server Error**: Server errors
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow the existing code style and architecture patterns
-4. Ensure all builds pass (`dotnet build`)
-5. Test your changes thoroughly
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+1. Fork repository
+2. Tạo feature branch: `git checkout -b feature/amazing-feature`
+3. Tuân thủ [coding standards](docs/code-standards.md)
+4. Commit changes: `git commit -m 'feat: Add amazing feature'`
+5. Push to branch: `git push origin feature/amazing-feature`
+6. Tạo Pull Request
 
-### Code Style
-- Follow Clean Architecture principles
-- Use SOLID design principles
-- Maintain separation of concerns
-- Include appropriate validation
-- Follow C# naming conventions
+### Commit Message Format
+```
+type: description
+
+Types: feat, fix, refactor, docs, test, chore, style, perf
+```
+
+## 📝 Configuration
+
+### appsettings.json
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=studentmanagement.db"
+  },
+  "JwtSettings": {
+    "Secret": "your-secret-key-here",
+    "Issuer": "StudentManagement",
+    "Audience": "StudentManagementUsers",
+    "ExpiryMinutes": 60
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}
+```
+
+### Database Location
+Development: `src/StudentManagement.WebApi/bin/Debug/net8.0/studentmanagement.db`
+
+## 🗺️ Roadmap
+
+- ✅ **Phase 1**: Project setup & architecture
+- ✅ **Phase 2**: Domain layer implementation
+- ✅ **Phase 3**: Application layer (CQRS)
+- ✅ **Phase 4**: Infrastructure layer (EF Core, repositories)
+- ✅ **Phase 5**: WebApi layer (controllers, middleware)
+- 🔄 **Phase 6**: Enhancements
+  - Unit & integration tests
+  - JWT authentication & authorization
+  - Advanced filtering & search
+  - Caching layer
+  - Performance optimization
+  - Docker support
+  - CI/CD pipeline
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details
 
-## 📞 Support
+## 📄 Documentation
 
-For questions and support:
-- Review the [Architecture Documentation](ARCHITECTURE_EXPLANATION_VN.md) (Vietnamese)
-- Check the API documentation at `/swagger` when running
-- Review the database schema in [DATABASE_STRUCTURE.md](DATABASE_STRUCTURE.md)
+- **API Documentation**: Swagger UI tại `/swagger`
+- **Tổng quan dự án**: [docs/project-overview-pdr.md](docs/project-overview-pdr.md)
+- **Codebase summary**: [docs/codebase-summary.md](docs/codebase-summary.md)
+- **Coding standards**: [docs/code-standards.md](docs/code-standards.md)
+- **System architecture**: [docs/system-architecture.md](docs/system-architecture.md)
+- **AI Assistant Guide**: [CLAUDE.md](CLAUDE.md)
+
+## 🎓 Learning Resources
+
+Dự án này là ví dụ tốt để học:
+- Clean Architecture principles
+- Domain-Driven Design (DDD)
+- CQRS pattern
+- Repository pattern
+- Unit of Work pattern
+- Value Objects
+- Entity Framework Core
+- MediatR
+- FluentValidation
+- AutoMapper
 
 ---
-
-**Built with Clean Architecture 🏗️ | Domain-Driven Design 🎯 | CQRS ⚡**
+**Version**: 1.0.0
+**Last Updated**: 2025-01-17

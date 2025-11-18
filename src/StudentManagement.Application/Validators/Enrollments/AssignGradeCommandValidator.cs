@@ -1,16 +1,16 @@
 using FluentValidation;
 using StudentManagement.Application.Commands.Enrollments;
 using StudentManagement.Domain.Entities;
-using StudentManagement.Domain.Repositories;
+using StudentManagement.Domain.Ports.IPersistence;
 
 namespace StudentManagement.Application.Validators.Enrollments;
 
 public class AssignGradeCommandValidator : AbstractValidator<AssignGradeCommand>
 {
-    private readonly IEnrollmentRepository _enrollmentRepository;
+    private readonly IEnrollmentPersistencePort _enrollmentRepository;
     private readonly string[] _validGrades = { "A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F" };
 
-    public AssignGradeCommandValidator(IEnrollmentRepository enrollmentRepository)
+    public AssignGradeCommandValidator(IEnrollmentPersistencePort enrollmentRepository)
     {
         _enrollmentRepository = enrollmentRepository;
 
