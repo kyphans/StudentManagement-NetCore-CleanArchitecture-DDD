@@ -1,70 +1,182 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+File này cung cấp hướng dẫn cho Claude Code (claude.ai/code) khi làm việc với code trong repository này.
 
-## Project Overview
+## Tổng Quan Dự Án
 
-This is a **Student Management System** built using **Clean Architecture** with **Domain-Driven Design (DDD)** principles in .NET 8.0.
+Đây là **Hệ Thống Quản Lý Sinh Viên** được xây dựng sử dụng **Clean Architecture** với các nguyên tắc **Domain-Driven Design (DDD)** trong .NET 8.0.
 
-**Architecture**: 4-layer Clean Architecture (Domain → Application → Infrastructure → WebApi)
-**Database**: SQLite with Entity Framework Core
-**Authentication**: JWT Bearer tokens with ASP.NET Core Identity
-**Patterns**: CQRS via MediatR, Repository Pattern, Domain Events
+**Kiến trúc**: Clean Architecture 4 tầng (Domain → Application → Infrastructure → WebApi)
+**Database**: SQLite với Entity Framework Core
+**Patterns**: CQRS qua MediatR, Repository Pattern, Domain Events
 
-## Essential Commands
+## Các Lệnh Cần Thiết
 
-### Quick Start
+### Khởi Động Nhanh
 ```bash
-# Build and run
+# Build và run
 dotnet build
 dotnet run --project src/StudentManagement.WebApi
 
 # Database migrations
 dotnet ef migrations add <Name> -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
 dotnet ef database update -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
+
+# Chạy tests
+dotnet test
 ```
 
-> **📋 Complete Command Reference**: See `suggested_commands` memory file for comprehensive development commands.
+## Quy Tắc Kiến Trúc Cốt Lõi
 
-## Core Architecture Rules
-
-### Dependency Flow (Strict)
-- **Domain** → No external dependencies  
-- **Application** → Domain only  
-- **Infrastructure** → Domain + Application  
+### Luồng Dependency (Nghiêm Ngặt)
+- **Domain** → Không có external dependencies
+- **Application** → Chỉ Domain
+- **Infrastructure** → Domain + Application
 - **WebApi** → Application + Infrastructure
 
-### Key Patterns
-- **CQRS**: Commands (modify) and Queries (read) via MediatR
-- **Repository**: Interfaces in Domain, implementations in Infrastructure
-- **JWT Auth**: Role-based authorization (Admin, Teacher, Student, Staff)
+### Các Pattern Chính
+- **CQRS**: Commands (ghi) và Queries (đọc) qua MediatR
+- **Repository**: Interfaces trong Domain, implementations trong Infrastructure
+- **Rich Domain Models**: Business logic trong entities, không phải services
+- **Value Objects**: Immutable objects cho concepts như Email, CourseCode, GPA
+- **Domain Events**: Xử lý side effects và cross-aggregate operations
 
-> **📋 Complete Architecture Guide**: See `architecture-comprehensive` memory file for detailed rules, patterns, and conventions.
-
-## Configuration
+## Cấu Hình
 
 ### Database
-- **File**: `studentmanagement.db` (SQLite, created in WebApi output directory)
-- **Connection**: `Data Source=studentmanagement.db` in `appsettings.json`
+- **File**: `studentmanagement.db` (SQLite, được tạo trong thư mục output của WebApi)
+- **Connection**: `Data Source=studentmanagement.db` trong `appsettings.json`
 
-### JWT Settings (Required)
-```json
-{
-  "JwtSettings": {
-    "Secret": "256-bit-secret-key",
-    "Issuer": "StudentManagement", 
-    "Audience": "StudentManagementUsers",
-    "ExpiryMinutes": 60,
-    "RefreshTokenExpiryDays": 7
-  }
-}
+### Entity Framework Core
+```bash
+# Thêm migration
+dotnet ef migrations add <MigrationName> -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
+
+# Áp dụng migrations
+dotnet ef database update -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
+
+# Xóa migration cuối
+dotnet ef migrations remove -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
 ```
 
-> **📋 Complete Configuration**: See `jwt_authentication_config` memory file for detailed auth setup.
+## Cấu Trúc Dự Án
 
-## Implementation Status
+```
+src/
+├── StudentManagement.Domain/           # Logic nghiệp vụ cốt lõi
+│   ├── Entities/                      # Domain entities
+│   ├── ValueObjects/                  # Value objects
+│   ├── Events/                        # Domain events
+│   ├── Repositories/                  # Repository interfaces
+│   └── Common/                        # Base classes, enums
+│
+├── StudentManagement.Application/      # Use cases & CQRS
+│   ├── Commands/                      # CQRS commands
+│   ├── Queries/                       # CQRS queries
+│   ├── DTOs/                          # Data transfer objects
+│   ├── Behaviors/                     # MediatR behaviors
+│   ├── Validators/                    # FluentValidation
+│   └── Mappings/                      # AutoMapper profiles
+│
+├── StudentManagement.Infrastructure/   # Data access & external services
+│   ├── Data/                          # DbContext, configurations
+│   ├── Repositories/                  # Repository implementations
+│   └── Migrations/                    # EF Core migrations
+│
+├── StudentManagement.WebApi/          # REST API & presentation
+│   ├── Controllers/                   # API endpoints
+│   ├── Middleware/                    # Custom middleware
+│   └── Program.cs                     # Startup configuration
+│
+└── StudentManagement.Domain.Tests/    # Domain layer unit tests
+    └── Entities/                      # Entity behavior tests
+```
 
-**Current Phase**: Phase 2 (Domain Layer) ✅ COMPLETE
-**Next Phase**: Phase 3 (Application CQRS) - Ready to implement
+## Quy Tắc Phát Triển
 
-> **📋 Detailed Status**: See `implementation-status-comprehensive` memory file for complete phase planning and current limitations.
+### Domain Layer
+- **Không có dependencies**: Pure C# code, không thư viện ngoài
+- **Rich domain models**: Business logic trong entities
+- **Value objects**: Immutable, validated
+- **Guard clauses**: Validation trong constructors
+- **Domain events**: Để communicate changes
+
+### Application Layer
+- **CQRS pattern**: Tách Commands và Queries
+- **MediatR handlers**: Một handler cho mỗi use case
+- **FluentValidation**: Validate inputs trước khi xử lý
+- **DTOs**: Không expose domain entities ra ngoài
+- **AutoMapper**: Tự động map giữa entities và DTOs
+
+### Infrastructure Layer
+- **Repository pattern**: Implement interfaces từ Domain
+- **Unit of Work**: Transaction management
+- **EF Core**: ORM cho data access
+- **Migrations**: Version control cho database schema
+
+### WebApi Layer
+- **Controllers**: Thin controllers, delegate to MediatR
+- **Exception handling**: Global middleware
+- **Response format**: Consistent API response structure
+- **Swagger**: Auto-generated API documentation
+
+## Best Practices
+
+### Khi Thêm Entity Mới
+1. Tạo entity trong `Domain/Entities`
+2. Thêm validation rules trong constructor
+3. Implement business methods
+4. Tạo repository interface trong `Domain/Repositories`
+5. Viết unit tests trong `Domain.Tests`
+6. Tạo entity configuration trong `Infrastructure/Data/Configurations`
+7. Add migration: `dotnet ef migrations add Add<EntityName>`
+
+### Khi Thêm Use Case Mới
+1. Tạo Command/Query trong `Application/Commands` hoặc `Queries`
+2. Tạo Handler cho Command/Query
+3. Tạo DTO nếu cần
+4. Thêm FluentValidation validator
+5. Update AutoMapper profile
+6. Tạo controller endpoint trong `WebApi/Controllers`
+
+### Testing Strategy
+- **Unit Tests**: Domain logic (entities, value objects)
+- **Integration Tests**: Use cases với in-memory database
+- **API Tests**: End-to-end testing qua HTTP
+
+## Dependencies
+
+### Domain
+- Không có external dependencies
+
+### Application
+- `MediatR` - CQRS implementation
+- `FluentValidation` - Input validation
+- `AutoMapper` - Object mapping
+
+### Infrastructure
+- `Microsoft.EntityFrameworkCore.Sqlite` - SQLite provider
+- `Microsoft.EntityFrameworkCore.Design` - EF Core tools
+
+### WebApi
+- `Swashbuckle.AspNetCore` - Swagger/OpenAPI
+- `MediatR` - Direct reference
+
+### Testing
+- `xUnit` - Test framework
+- `FluentAssertions` - Test assertions
+- `Microsoft.EntityFrameworkCore.InMemory` - In-memory database for testing
+
+## Tài Liệu Tham Khảo
+
+Để biết thông tin chi tiết về dự án, vui lòng tham khảo các tài liệu sau:
+
+- **[README.md](README.md)** - Tổng quan dự án, hướng dẫn cài đặt và sử dụng
+- **[DATABASE_STRUCTURE.md](DATABASE_STRUCTURE.md)** - Cấu trúc database chi tiết, entities và relationships
+- **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Kế hoạch triển khai từng phase, trạng thái hiện tại và roadmap
+- **[ARCHITECTURE_EXPLANATION_VN.md](ARCHITECTURE_EXPLANATION_VN.md)** - Giải thích chi tiết về kiến trúc (nếu có)
+
+---
+
+**Cập nhật lần cuối**: 2025-12-02
+**Phiên bản**: 1.0
