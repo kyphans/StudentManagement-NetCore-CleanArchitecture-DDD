@@ -10,7 +10,7 @@ var config = builder.Configuration;
 // Add services to the container by layer
 services.AddApplication();
 services.AddInfrastructure(config);
-services.AddWebApi();
+services.AddWebApi(config);
 
 var app = builder.Build();
 
@@ -35,6 +35,10 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Enable CORS (if configured)
 app.UseCors("AllowAll");
+
+// THÊM AUTHENTICATION & AUTHORIZATION MIDDLEWARE
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Health checks
 app.MapHealthChecks("/health");

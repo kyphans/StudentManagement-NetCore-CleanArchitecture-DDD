@@ -4,19 +4,7 @@ Một hệ thống quản lý sinh viên toàn diện được xây dựng với
 
 ## 🏗️ Kiến Trúc
 
-Dự án này triển khai **Clean Architecture** với các tầng sau:
-- **Domain**: Logic nghiệp vụ cốt lõi và các thực thể
-- **Application**: Use cases và CQRS handlers
-- **Infrastructure**: Truy cập dữ liệu và các dịch vụ bên ngoài
-- **WebApi**: REST API controllers và presentation
-
-### Các Mẫu Thiết Kế Chính
-- **Clean Architecture** với dependency inversion đúng chuẩn
-- **Domain-Driven Design (DDD)** với rich domain models
-- **CQRS** pattern sử dụng MediatR
-- **Repository Pattern** với Unit of Work
-- **AutoMapper** cho object-to-object mapping
-- **FluentValidation** pipeline cho input validation
+Dự án triển khai **Clean Architecture** với **Domain-Driven Design (DDD)** và **CQRS** pattern. Xem chi tiết trong [CLAUDE.md](CLAUDE.md).
 
 ## 🚀 Tính Năng
 
@@ -113,31 +101,7 @@ curl "http://localhost:5282/api/students?pageNumber=1&pageSize=10&searchTerm=An&
 
 ## 🏛️ Cấu Trúc Dự Án
 
-```
-src/
-├── StudentManagement.Domain/           # Logic nghiệp vụ cốt lõi
-│   ├── Entities/                      # Domain entities (Student, Course, Enrollment)
-│   ├── ValueObjects/                  # Value objects (Email, GPA, CourseCode)
-│   ├── Events/                        # Domain events
-│   └── Repositories/                  # Repository interfaces
-├── StudentManagement.Application/      # Use cases & CQRS
-│   ├── Commands/                      # Write operations (Create, Update)
-│   ├── Queries/                       # Read operations (Get, List)
-│   ├── DTOs/                          # Data transfer objects
-│   ├── Behaviors/                     # Cross-cutting concerns
-│   ├── Validators/                    # FluentValidation rules
-│   └── Mappings/                      # AutoMapper profiles
-├── StudentManagement.Infrastructure/   # Data access & external services
-│   ├── Data/                          # EF Core DbContext & configurations
-│   ├── Repositories/                  # Repository implementations
-│   └── Migrations/                    # Database migrations
-├── StudentManagement.WebApi/          # REST API & presentation
-│   ├── Controllers/                   # API controllers
-│   ├── Middleware/                    # Custom middleware
-│   └── Program.cs                     # Application entry point
-└── StudentManagement.Domain.Tests/    # Domain layer unit tests
-    └── Entities/                      # Entity behavior tests
-```
+4 layers: Domain (entities, value objects) → Application (CQRS) → Infrastructure (data access) → WebApi (controllers). Xem cấu trúc chi tiết trong [CLAUDE.md](CLAUDE.md).
 
 ## 🔧 Cấu Hình
 
@@ -221,18 +185,7 @@ Tất cả API responses tuân theo cấu trúc này:
 
 ## 📦 Dependencies
 
-### Core Dependencies
-- **.NET 8.0**: Target framework
-- **MediatR**: CQRS pattern implementation
-- **Entity Framework Core**: ORM và SQLite provider
-- **AutoMapper**: Object-to-object mapping
-- **FluentValidation**: Input validation
-
-### Development Dependencies
-- **Swashbuckle.AspNetCore**: API documentation
-- **Microsoft.EntityFrameworkCore.Tools**: EF Core CLI tools
-- **xUnit**: Testing framework
-- **FluentAssertions**: Test assertions
+.NET 8.0, MediatR (CQRS), Entity Framework Core (SQLite), AutoMapper, FluentValidation, Swashbuckle (Swagger), xUnit. Xem danh sách đầy đủ trong [CLAUDE.md](CLAUDE.md).
 
 ## 🚀 Deployment
 
@@ -257,23 +210,7 @@ dotnet ef database update -p src/StudentManagement.Infrastructure -s src/Student
 
 ## 🔄 Development Workflow
 
-### Các Lệnh Cần Thiết
-```bash
-# Build và run
-dotnet build
-dotnet run --project src/StudentManagement.WebApi
-
-# Chạy tests
-dotnet test
-
-# Database operations
-dotnet ef migrations add <Name> -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-dotnet ef database update -p src/StudentManagement.Infrastructure -s src/StudentManagement.WebApi
-
-# Clean và rebuild
-dotnet clean
-dotnet build
-```
+Các lệnh phát triển (build, run, test, migrations) xem trong [CLAUDE.md](CLAUDE.md).
 
 ## 📈 Hiệu Suất
 
@@ -313,7 +250,7 @@ Dự án này được cấp phép theo MIT License - xem file [LICENSE](LICENSE
 - **[CLAUDE.md](CLAUDE.md)** - Hướng dẫn cho Claude Code, quy tắc phát triển và best practices
 - **[DATABASE_STRUCTURE.md](DATABASE_STRUCTURE.md)** - Cấu trúc database chi tiết, entities và relationships
 - **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Kế hoạch triển khai từng phase, trạng thái hiện tại và roadmap
-- **[ARCHITECTURE_EXPLANATION_VN.md](ARCHITECTURE_EXPLANATION_VN.md)** - Giải thích chi tiết về kiến trúc (nếu có)
+- **[archive/](archive/)** - Tài liệu đã archived (chi tiết verbose)
 
 ### API Documentation
 - Kiểm tra API documentation tại `/swagger` khi chạy ứng dụng

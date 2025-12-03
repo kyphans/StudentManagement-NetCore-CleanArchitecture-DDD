@@ -15,6 +15,8 @@ public class StudentManagementDbContext : DbContext
     public DbSet<Course> Courses { get; set; } = null!;
     public DbSet<Enrollment> Enrollments { get; set; } = null!;
     public DbSet<Grade> Grades { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!; 
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!; 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +25,8 @@ public class StudentManagementDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CourseConfiguration());
         modelBuilder.ApplyConfiguration(new EnrollmentConfiguration());
         modelBuilder.ApplyConfiguration(new GradeConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
 
         // Configure value object conversions
         modelBuilder.Entity<Student>()

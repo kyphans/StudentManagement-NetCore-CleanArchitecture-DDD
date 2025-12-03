@@ -174,7 +174,7 @@ src/
 - **[README.md](README.md)** - Tổng quan dự án, hướng dẫn cài đặt và sử dụng
 - **[DATABASE_STRUCTURE.md](DATABASE_STRUCTURE.md)** - Cấu trúc database chi tiết, entities và relationships
 - **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Kế hoạch triển khai từng phase, trạng thái hiện tại và roadmap
-- **[ARCHITECTURE_EXPLANATION_VN.md](ARCHITECTURE_EXPLANATION_VN.md)** - Giải thích chi tiết về kiến trúc (nếu có)
+- **[archive/](archive/)** - Tài liệu chi tiết đã archived (giảm token usage)
 
 ---
 

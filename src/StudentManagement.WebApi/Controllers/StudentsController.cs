@@ -1,4 +1,5 @@
-using MediatR;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentManagement.Application.Commands.Students;
 using StudentManagement.Application.DTOs;
@@ -8,6 +9,7 @@ namespace StudentManagement.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class StudentsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,8 +21,10 @@ public class StudentsController : ControllerBase
 
     /// <summary>
     /// Get all students with optional filtering and pagination
+    /// Override: chỉ Admin, Teacher, Staff mới xem list
     /// </summary>
     [HttpGet]
+    [Authorize(Roles = "Admin,Teacher,Staff")]
     public async Task<ActionResult<ApiResponseDto<PagedResultDto<StudentSummaryDto>>>> GetStudents(
         [FromQuery] StudentFilterDto filter,
         CancellationToken cancellationToken = default)
@@ -53,8 +57,10 @@ public class StudentsController : ControllerBase
 
     /// <summary>
     /// Create a new student
+    /// Override: chỉ Admin, Staff mới tạo student
     /// </summary>
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<ActionResult<ApiResponseDto<StudentDto>>> CreateStudent(
         [FromBody] CreateStudentDto dto,
         CancellationToken cancellationToken = default)

@@ -1,12 +1,17 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StudentManagement.WebApi.Authorization;
 using System.IO.Compression;
+using System.Text;
 
 namespace StudentManagement.WebApi;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddWebApi(this IServiceCollection services)
+    public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration)
     {
         // Controllers with enhanced configuration
         services.AddControllers(options =>
@@ -17,6 +22,44 @@ public static class DependencyInjection
 
         // API Explorer for Swagger
         services.AddEndpointsApiExplorer();
+
+        // JWT authentication configuration
+        var jwtSecret = configuration["JwtSettings:Secret"];
+        var jwtIssuer = configuration["JwtSettings:Issuer"];
+        var jwtAudience = configuration["JwtSettings:Audience"];
+
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!)),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtIssuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtAudience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+        // AUTHORIZATION
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("TeacherOnly", policy => policy.RequireRole("Teacher"));
+            options.AddPolicy("StudentOnly", policy => policy.RequireRole("Student"));
+            options.AddPolicy("StaffOnly", policy => policy.RequireRole("Staff"));
+            options.AddPolicy("TeacherOrAdmin", policy => policy.RequireRole("Teacher", "Admin"));
+        });
+
+        // Custom Authorization Handler for custom error messages
+        services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
 
         // Response compression
         services.AddResponseCompression(options =>
@@ -51,29 +94,31 @@ public static class DependencyInjection
             {
                 Title = "Student Management API",
                 Version = "v1",
-                Description = @"A comprehensive Student Management System built with Clean Architecture and Domain-Driven Design principles.
+                Description = @"A comprehensive Student Management System built with Clean Architecture and Domain-Driven Design principles."
+            });
 
-## Features
-- Student enrollment and management
-- Course creation and administration
-- Grade tracking and GPA calculation
-- CQRS pattern with MediatR
-- FluentValidation for business rules
-- Comprehensive error handling
+            // THÊM JWT BEARER AUTHENTICATION CHO SWAGGER
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
 
-## API Features
-- RESTful endpoints for all operations
-- Comprehensive data validation
-- Structured error responses",
-                Contact = new OpenApiContact
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
                 {
-                    Name = "Student Management System",
-                    Email = "support@studentmanagement.com"
-                },
-                License = new OpenApiLicense
-                {
-                    Name = "MIT License",
-                    Url = new Uri("https://opensource.org/licenses/MIT")
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
                 }
             });
 

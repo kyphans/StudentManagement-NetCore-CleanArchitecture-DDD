@@ -15,6 +15,7 @@ public record Email
         Value = ValidateAndFormat(value);
     }
 
+    public static Email Create(string value) => new Email(value);
     private static string ValidateAndFormat(string value)
     {
         if (string.IsNullOrWhiteSpace(value))

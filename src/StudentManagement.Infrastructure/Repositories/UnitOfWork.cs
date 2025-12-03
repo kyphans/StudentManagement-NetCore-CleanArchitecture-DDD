@@ -15,11 +15,13 @@ public class UnitOfWork : IUnitOfWork
         Students = new StudentRepository(_context);
         Courses = new CourseRepository(_context);
         Enrollments = new EnrollmentRepository(_context);
+        Users = new UserRepository(_context);
     }
 
     public IStudentRepository Students { get; }
     public ICourseRepository Courses { get; }
     public IEnrollmentRepository Enrollments { get; }
+    public IUserRepository Users { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
