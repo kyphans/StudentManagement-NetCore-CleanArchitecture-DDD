@@ -18,7 +18,7 @@ public class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
             
         builder.Property(e => e.EnrollmentDate)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(e => e.CompletionDate)
             .IsRequired(false);
@@ -32,11 +32,11 @@ public class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
             
         builder.Property(e => e.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(e => e.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
 
         // Ignore computed properties
         builder.Ignore(e => e.IsActive);

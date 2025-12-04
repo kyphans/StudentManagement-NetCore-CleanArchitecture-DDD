@@ -19,7 +19,7 @@ public class User : BaseEntity<Guid>
     public bool IsActive { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
 
-    // Navigation property
+    // Navigation & backing field (DDD pattern)
     private readonly List<RefreshToken> _refreshTokens = new();
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
@@ -143,14 +143,16 @@ public class User : BaseEntity<Guid>
     }
 
     /// <summary>
-    /// Thêm refresh token
+    /// Thêm refresh token mới (DDD pattern)
     /// </summary>
+    /// <param name="token">RefreshToken entity</param>
     public void AddRefreshToken(RefreshToken token)
     {
         if (token == null)
             throw new ArgumentNullException(nameof(token));
 
         _refreshTokens.Add(token);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>

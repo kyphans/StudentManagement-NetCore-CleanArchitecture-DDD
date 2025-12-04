@@ -41,11 +41,11 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
             
         builder.Property(c => c.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(c => c.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
 
         // Ignore computed properties
         builder.Ignore(c => c.CurrentEnrollmentCount);

@@ -40,22 +40,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ApiResponseDto<
     {
         try
         {
-            // 1. Tìm user theo username
+            // 1. Tìm user theo username VÀ load RefreshTokens ngay (CHỈ 1 QUERY)
             var username = Username.Create(request.Username);
-            var user = await _unitOfWork.Users.GetByUsernameAsync(username, cancellationToken);
+            var user = await _unitOfWork.Users.GetByUsernameWithRefreshTokensAsync(username, cancellationToken);
 
             if (user == null)
             {
                 return ApiResponseDto<AuthenticationResponseDto>.ErrorResult(
                     new[] { "Username hoặc password không đúng" });
-            }
-
-            // Load lại user với refresh tokens để ensure tracking
-            user = await _unitOfWork.Users.GetWithRefreshTokensAsync(user.Id, cancellationToken);
-            if (user == null)
-            {
-                return ApiResponseDto<AuthenticationResponseDto>.ErrorResult(
-                    new[] { "Không tìm thấy user" });
             }
 
             // 2. Kiểm tra user có active không
@@ -90,19 +82,16 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ApiResponseDto<
                 createdByIp: request.IpAddress ?? "unknown"
             );
 
-            // 6. Update last login TRƯỚC (để trigger tracking)
-            user.UpdateLastLogin();
-
-            // 7. Xóa các refresh tokens đã expired
+            // 6. Xóa các refresh tokens đã expired
             user.RemoveExpiredRefreshTokens();
 
-            // 8. Thêm refresh token vào user
+            // 7. Thêm refresh token mới vào user
             user.AddRefreshToken(refreshToken);
 
-            // 9. Explicitly update user để trigger EF Core tracking
-            _unitOfWork.Users.Update(user);
+            // 8. Update last login
+            user.UpdateLastLogin();
 
-            // 10. Save changes
+            // 9. Save changes
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             // 9. Map sang DTO

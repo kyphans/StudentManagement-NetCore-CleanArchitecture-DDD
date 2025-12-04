@@ -15,8 +15,15 @@ public class StudentManagementDbContext : DbContext
     public DbSet<Course> Courses { get; set; } = null!;
     public DbSet<Enrollment> Enrollments { get; set; } = null!;
     public DbSet<Grade> Grades { get; set; } = null!;
-    public DbSet<User> Users { get; set; } = null!; 
-    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!; 
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Force EF Core to detect changes in collection navigation properties
+        ChangeTracker.DetectChanges();
+        return base.SaveChangesAsync(cancellationToken);
+    } 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

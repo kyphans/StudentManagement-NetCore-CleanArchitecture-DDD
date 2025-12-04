@@ -3,18 +3,28 @@
 /// <summary>
 /// Entity để quản lý refresh tokens
 /// Refresh token dùng để lấy access token mới khi token cũ hết hạn
+/// KHÔNG kế thừa BaseEntity vì RefreshToken là immutable (không cần UpdatedAt)
 /// </summary>
-public class RefreshToken : BaseEntity<Guid>
+public class RefreshToken
 {
+    // Primary key
+    public Guid Id { get; private set; }
+
+    // Foreign key
     public Guid UserId { get; private set; }
+
+    // Token data
     public string Token { get; private set; } = string.Empty;
     public DateTime ExpiresAt { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public string CreatedByIp { get; private set; } = string.Empty;
+
+    // Revocation data
     public DateTime? RevokedAt { get; private set; }
     public string? RevokedByIp { get; private set; }
     public string? ReplacedByToken { get; private set; }
-    public string CreatedByIp { get; private set; } = string.Empty;
 
-    // Computed property
+    // Computed properties
     public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
     public bool IsRevoked => RevokedAt != null;
     public bool IsActive => !IsRevoked && !IsExpired;
@@ -44,7 +54,7 @@ public class RefreshToken : BaseEntity<Guid>
         if (string.IsNullOrWhiteSpace(createdByIp))
             throw new ArgumentException("Created by IP không được để trống");
 
-        return new RefreshToken
+        var refreshToken = new RefreshToken
         {
             Id = Guid.NewGuid(),
             UserId = userId,
@@ -53,6 +63,10 @@ public class RefreshToken : BaseEntity<Guid>
             CreatedAt = DateTime.UtcNow,
             CreatedByIp = createdByIp
         };
+
+        // NOTE: UpdatedAt is ignored in EF Core config, but we need to prevent BaseEntity from setting it
+        // This is a workaround since RefreshToken is immutable
+        return refreshToken;
     }
 
     /// <summary>

@@ -27,7 +27,7 @@ public class GradeConfiguration : IEntityTypeConfiguration<Grade>
             
         builder.Property(g => g.GradedDate)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(g => g.GradedBy)
             .IsRequired()
@@ -35,11 +35,11 @@ public class GradeConfiguration : IEntityTypeConfiguration<Grade>
             
         builder.Property(g => g.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(g => g.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
 
         // Ignore computed properties
         builder.Ignore(g => g.IsPassing);

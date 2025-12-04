@@ -15,7 +15,7 @@ public static class DependencyInjection
     {
         // Database
         services.AddDbContext<StudentManagementDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         // Repositories
         services.AddScoped<IStudentRepository, StudentRepository>();

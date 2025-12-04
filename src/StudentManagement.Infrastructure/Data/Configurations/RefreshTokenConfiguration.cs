@@ -16,6 +16,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 
         // Primary key
         builder.HasKey(rt => rt.Id);
+        builder.Property(rt => rt.Id).ValueGeneratedNever();
 
         // UserId
         builder.Property(rt => rt.UserId)

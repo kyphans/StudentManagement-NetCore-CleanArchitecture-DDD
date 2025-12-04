@@ -72,11 +72,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Timestamps
         builder.Property(u => u.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
 
         builder.Property(u => u.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
 
         builder.Property(u => u.LastLoginAt)
             .IsRequired(false);
@@ -84,10 +84,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Ignore computed properties
         builder.Ignore(u => u.FullName);
 
-        // Relationships
+        // Configure relationship with backing field
         builder.HasMany(u => u.RefreshTokens)
             .WithOne()
-            .HasForeignKey("UserId")
+            .HasForeignKey(rt => rt.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Dùng backing field _refreshTokens
+        builder.Metadata
+            .FindNavigation(nameof(User.RefreshTokens))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

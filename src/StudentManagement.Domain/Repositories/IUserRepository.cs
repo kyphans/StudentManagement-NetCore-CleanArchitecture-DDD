@@ -34,6 +34,11 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<User?> GetWithRefreshTokensAsync(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Lấy user theo username VỚI refresh tokens (for login)
+    /// </summary>
+    Task<User?> GetByUsernameWithRefreshTokensAsync(Username username, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Lấy user theo refresh token
     /// </summary>
     Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);

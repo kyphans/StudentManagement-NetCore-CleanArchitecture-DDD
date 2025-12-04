@@ -70,6 +70,15 @@ public class UserRepository : Repository<User, Guid>, IUserRepository
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
     }
 
+    public async Task<User?> GetByUsernameWithRefreshTokensAsync(
+        Username username,
+        CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Include(u => u.RefreshTokens)
+            .FirstOrDefaultAsync(u => u.Username == username, cancellationToken);
+    }
+
     public async Task<User?> GetByRefreshTokenAsync(
         string refreshToken,
         CancellationToken cancellationToken = default)

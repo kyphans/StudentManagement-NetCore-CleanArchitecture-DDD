@@ -31,7 +31,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             
         builder.Property(s => s.EnrollmentDate)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(s => s.IsActive)
             .IsRequired()
@@ -39,11 +39,11 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             
         builder.Property(s => s.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
             
         builder.Property(s => s.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("datetime('now')");
+            .HasDefaultValueSql("GETDATE()");
 
         // Ignore computed properties
         builder.Ignore(s => s.FullName);
