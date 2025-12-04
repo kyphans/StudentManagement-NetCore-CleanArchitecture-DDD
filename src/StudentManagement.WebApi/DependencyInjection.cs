@@ -97,14 +97,15 @@ public static class DependencyInjection
                 Description = @"A comprehensive Student Management System built with Clean Architecture and Domain-Driven Design principles."
             });
 
-            // THÊM JWT BEARER AUTHENTICATION CHO SWAGGER
+            // THï¿½M JWT BEARER AUTHENTICATION CHO SWAGGER
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter your token in the text input below.",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
             });
 
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
