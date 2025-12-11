@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Infrastructure", "03. I
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. WebApi", "04. WebApi", "{E8DEB8A4-45F9-497E-AA15-6DEA76D3406A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "99. Unittest", "99. Unittest", "{1A9477F6-0FE3-1AF8-6CB5-AF7EF55D1068}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "99. Unit Test", "99. Unit Test", "{1A9477F6-0FE3-1AF8-6CB5-AF7EF55D1068}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentManagement.Domain.Tests", "tests\StudentManagement.Domain.Tests\StudentManagement.Domain.Tests.csproj", "{930095EB-C508-6E23-34D4-DE0B4955F023}"
 EndProject

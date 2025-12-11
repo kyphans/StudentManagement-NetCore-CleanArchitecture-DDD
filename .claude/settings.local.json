@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(dotnet sln:*)",
-      "Bash(dotnet ef database update:*)"
+      "Bash(dotnet ef database update:*)",
+      "Bash(dotnet ef migrations add:*)"
     ],
     "deny": [],
     "ask": []
